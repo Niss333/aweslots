@@ -8,7 +8,7 @@ COPY . .
 
 #RUN go get github.com/pilu/fresh
 #RUN go get ./...
-RUN go install github.com/Niss333/aweslots
+RUN go install github.com/Niss333/aweslots@latest
 
 # Run the outyet command by default when the container starts.
 ENTRYPOINT /go/bin/aweslots
