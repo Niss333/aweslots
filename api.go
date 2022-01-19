@@ -168,7 +168,7 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 	switch command.Type {
 	case "users":
 		result := make([]user, 0)
-		userCursor, err := db.slots.Find(context.Background(), bson.D{})
+		userCursor, err := db.users.Find(context.Background(), bson.D{})
 		if err == nil {
 			defer userCursor.Close(ctx)
 			for userCursor.Next(ctx) {

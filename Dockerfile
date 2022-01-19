@@ -3,12 +3,18 @@ FROM golang
 #RUN adduser --disabled-password --gecos '' api
 #USER api
 
-#WORKDIR /go/src/app
+WORKDIR $GOPATH/src
 #COPY . .
 
-#RUN go get github.com/pilu/fresh
-#RUN go get ./...
-RUN go install github.com/Niss333/aweslots@latest
+RUN export GO111MODULE=auto
+RUN git clone https://github.com/Niss333/aweslots.git
+WORKDIR /go/src/aweslots
+RUN go mod init
+RUN go get go.mongodb.org/mongo-driver/bson
+RUN go get go.mongodb.org/mongo-driver/mongo
+RUN go get go.mongodb.org/mongo-driver/mongo/options
+RUN go install
+#RUN go install github.com/Niss333/aweslots@latest
 
 # Run the outyet command by default when the container starts.
 ENTRYPOINT /go/bin/aweslots
