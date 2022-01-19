@@ -144,11 +144,11 @@ func (app *appContext) serveRoot(res http.ResponseWriter, req *http.Request) {
 
 func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Request) {
 	//Recover
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println("xhr request failed:", err)
-		}
-	}()
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		fmt.Println("xhr request failed:", err)
+	// 	}
+	// }()
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("X-Content-Type-Options", "nosniff")
 	response.Header().Set("Content-Type", "application/json; charset=UTF-8")
