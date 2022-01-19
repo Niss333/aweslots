@@ -3,14 +3,26 @@ services:
   api:
     container_name: 'api'
     build: '.'
-    ports:
-      - '8080:80'
     volumes:
       - '.:/go/src/app'
     depends_on:
       - 'mongo'
+    ports:
+      - '8080:80'
   mongo:
     image: 'mongo:4.2'
     container_name: 'mongo'
     ports:
       - '27017:27017'
+    networks:
+      mongo_net:
+        ipv4_address: 172.16.0.1
+    command: mongod --bind_ip 127.0.0.1,172.16.0.1
+
+networks:
+  mongo_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.16.0.0/24
+        gateway: 172.16.0.254

@@ -58,7 +58,7 @@ type appContext struct {
 
 func main() {
 	app := appContext{IP: "0.0.0.0", Port: "8080", Path: "."}
-	clientOptions := options.Client().ApplyURI("mongodb://mongo")
+	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1")
 	client, err := mongo.NewClient(clientOptions)
 	if err == nil {
 		app.MongoClient = client
