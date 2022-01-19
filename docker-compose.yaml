@@ -20,7 +20,7 @@ services:
     networks:
       mongo_net:
         ipv4_address: 172.16.0.5
-    command: mongod --bind_ip 127.0.0.1,172.16.0.5
+    command: mongod --bind_ip 172.16.0.5
 
 networks:
   mongo_net:

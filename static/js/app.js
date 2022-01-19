@@ -1,5 +1,12 @@
 //
-function send(request) {
+function ApplicationObject() {
+	//contructor
+	this.language = "en";
+	this.users = [];
+	this.slots = [];
+}
+
+ApplicationObject.prototype.send = function (request) {
 	var xhr = new XMLHttpRequest();
 	xhr.timeout = 30000;
 	xhr.open('POST', "/xhr");
@@ -40,13 +47,15 @@ class Hello extends React.Component {
     render() {
       return React.createElement('div', null, `Привет, ${this.props.toWhat}`);
     }
-  }
+}
 
 //Init
+var app = new ApplicationObject();
+
 window.onload = function() {
-    console.log("hello react");
-    send({command: "slots"});
-    ReactDOM.render(
+	console.log("hello guys");
+	app.send({command: "users"});
+	ReactDOM.render(
         React.createElement(Hello, {toWhat: 'мир'}, null),
         document.getElementById('appDisplay')
     );

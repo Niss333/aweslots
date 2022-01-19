@@ -57,7 +57,7 @@ type appContext struct {
 }
 
 func main() {
-	app := appContext{IP: "172.16.0.6", Port: "8080", Path: "."}
+	app := appContext{IP: "172.16.0.6", Port: "8080", Path: "/go/src/app"}
 	clientOptions := options.Client().ApplyURI("mongodb://172.16.0.5")
 	client, err := mongo.NewClient(clientOptions)
 	if err == nil {
@@ -134,12 +134,12 @@ func main() {
 	fmt.Println(app.Server.ListenAndServe().Error())
 }
 
-func (db *appContext) serveRoot(res http.ResponseWriter, req *http.Request) {
+func (app *appContext) serveRoot(res http.ResponseWriter, req *http.Request) {
 	fname := path.Base(req.URL.Path)
 	fmt.Printf("[%s] Serving %s for %s\n", time.Now().Truncate(time.Second), fname, req.Header.Get("X-Forwarded-For"))
 	res.Header().Set("Cache-Control", "max-age=31536000, immutable")
 	res.Header().Set("X-Content-Type-Options", "nosniff")
-	http.ServeFile(res, req, filepath.Join(db.Path, req.URL.Path))
+	http.ServeFile(res, req, filepath.Join(app.Path, req.URL.Path))
 }
 
 func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Request) {
@@ -166,6 +166,27 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 	}
 	fmt.Println("Got", command.Type, "command")
 	switch command.Type {
+	case "users":
+		var result []user
+		userCursor, err := db.slots.Find(context.Background(), bson.D{})
+		if err == nil {
+			defer userCursor.Close(ctx)
+			for userCursor.Next(ctx) {
+				var u user
+				err := userCursor.Decode(&u)
+				if err == nil {
+					result = append(result, u)
+				} else {
+					fmt.Println("user decoding failed:", err.Error())
+				}
+			}
+			if err := userCursor.Err(); err == nil {
+				reply.Status = "ok"
+				reply.Data = result
+			} else {
+				reply.Data = fmt.Sprintf("userCursor failed: %s", err.Error())
+			}
+		}
 	case "slots":
 		var result []slot
 		var params map[string]interface{}
