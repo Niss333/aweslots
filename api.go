@@ -167,7 +167,7 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 	fmt.Println("Got", command.Type, "command")
 	switch command.Type {
 	case "users":
-		var result []user
+		result := make([]user, 0)
 		userCursor, err := db.slots.Find(context.Background(), bson.D{})
 		if err == nil {
 			defer userCursor.Close(ctx)
@@ -188,7 +188,7 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 			}
 		}
 	case "slots":
-		var result []slot
+		result := make([]slot, 0)
 		var params map[string]interface{}
 		err := json.Unmarshal(*command.Data, &params)
 		if err == nil {
