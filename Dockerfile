@@ -3,8 +3,8 @@ FROM golang
 #RUN adduser --disabled-password --gecos '' api
 #USER api
 
-WORKDIR /go/src/app
-COPY . .
+#WORKDIR /go/src/app
+#COPY . .
 
 #RUN go get github.com/pilu/fresh
 #RUN go get ./...
