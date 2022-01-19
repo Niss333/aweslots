@@ -54,7 +54,7 @@ var app = new ApplicationObject();
 
 window.onload = function() {
 	console.log("hello guys");
-	app.send({command: "users"});
+	app.send({command: "users", data: null});
 	ReactDOM.render(
         React.createElement(Hello, {toWhat: 'мир'}, null),
         document.getElementById('appDisplay')
