@@ -8,6 +8,9 @@ function ApplicationObject() {
 	this.controls = document.getElementById("controls");
 	var tab = document.createElement("li"); tab.className = "navControl flexCenter"; tab.innerText = "Basics";
 	this.navigation.appendChild(tab);
+	this.users = [];
+	this.slots = [];
+	this.errorMessage = "Ok";
 }
 
 ApplicationObject.prototype.newElement = function(tag, id, className, html) {
@@ -53,10 +56,13 @@ ApplicationObject.prototype.send = function (request) {
                     console.log(reply.data);
 					switch (reply.status) {
 						case "users":
-							display.setState({users: reply.data});
+							// display.setState({users: reply.data});
+							app.users = reply.data;
+							app.render();
 							break;
 						case "slots":
-							display.setState({slots: reply.data});
+							app.slots = reply.data;
+							app.render();
 							break;
 						case "add":
 							break;
@@ -85,6 +91,26 @@ ApplicationObject.prototype.send = function (request) {
 	}
 }
 
+ApplicationObject.prototype.render = function () {
+	while (this.display.firstChild) this.display.firstChild.remove();
+	// this.display.querySelectorAll('*').forEach(n => n.remove());
+	// searchBar
+	var userOptions = {all: "All"};
+	for (var user of this.state.users) {
+		userOptions[user.id] = `${user.firstName} ${user.lastName}`;
+	}
+	var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
+	var fromSelect = app.newTextInput("slotFromFilter", "quarterWidth flexCenter");
+	var toSelect = app.newTextInput("slotToFilter", "quarterWidth flexCenter");
+	var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter");
+	var searchBar = app.newElement("div", null, "allWidth flexCenter");
+	searchBar.append(userSelect, fromSelect, toSelect, searchButton);
+	// slotList
+	// addBar
+	// statusBar
+	this.display.append(searchBar);
+}
+
 class BasicDisplay extends React.Component {
 	constructor(props) {
 	  super(props);
@@ -98,31 +124,16 @@ class BasicDisplay extends React.Component {
 		app.send({command: "slots", data: null, user: document.getElementById('slotUserFilter').value});
 	}
     render() {
-		// searchBar
-		var userOptions = {all: "All"};
-		for (var user of this.state.users) {
-			userOptions[user.id] = `${user.firstName} ${user.lastName}`;
-		}
-		var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
-		var fromSelect = app.newTextInput("slotFromFilter", "quarterWidth flexCenter");
-		var toSelect = app.newTextInput("slotToFilter", "quarterWidth flexCenter");
-		var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter");
-		var searchBar = app.newElement("div", null, "allWidth flexCenter");
-		searchBar.append(userSelect, fromSelect, toSelect, searchButton);
-		// React.createElement('div className="allWidth flexCenter"', null, );
-		// searchBar.className = "allWidth flexCenter";
-		// slotList
-		// addBar
-		// statusBar
-		return [searchBar];
+		return <div>Привет, {this.props.toWhat}</div>;
 	}
 }
 
 //Init
 var app = new ApplicationObject();
-var display = React.createElement(BasicDisplay, {toWhat: 'мир'}, null);
+// var display = React.createElement(BasicDisplay, {toWhat: 'мир'}, null);
 
 window.onload = function() {
 	console.log("hello guys");
-	ReactDOM.render(display, app.display);
+	app.send({command: "users", data: null});
+	// ReactDOM.render(display, app.display);
 }
