@@ -79,9 +79,9 @@ func main() {
 			if err == nil {
 				fmt.Printf("%d users found\n", usersCount)
 				if usersCount == 0 {
-					userA := user{Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
+					userA := user{ID: primitive.NewObjectID(), Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
 					app.users.InsertOne(ctx, userA)
-					userB := user{Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
+					userB := user{ID: primitive.NewObjectID(), Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
 					_, err = app.users.InsertOne(ctx, userB)
 					if err == nil {
 						fmt.Printf("Two users %s and %s created\n", userA.ID, userB.ID)
@@ -225,7 +225,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 	case "add":
 		timeZero := time.Time{}
 		if command.From != timeZero && command.To != timeZero && len(command.UserID) > 1 {
-			newSlot := slot{UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
+			newSlot := slot{ID: primitive.NewObjectID(), UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
 			result, err := app.slots.InsertOne(ctx, newSlot)
 			if err == nil {
 				reply.Status = "ok"
