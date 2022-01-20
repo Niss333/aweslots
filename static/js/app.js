@@ -124,7 +124,7 @@ class BasicDisplay extends React.Component {
 		app.send({command: "slots", data: null, user: document.getElementById('slotUserFilter').value});
 	}
     render() {
-		return <div>Привет, {this.props.toWhat}</div>;
+		return React.createElement('div', null, `Привет, ${this.props.toWhat}`);
 	}
 }
 
