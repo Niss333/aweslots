@@ -13,28 +13,33 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type user struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"-"`
-	Password  string `json:"-"`
-	ID        string `json:"id" bson:"_id"`
+	ID        primitive.ObjectID `json:"id" bson:"_id"`
+	FirstName string             `json:"firstName"`
+	LastName  string             `json:"lastName"`
+	Email     string             `json:"-"`
+	Password  string             `json:"-"`
 }
 
 type slot struct {
-	UID     string
-	Comment string
+	ID      primitive.ObjectID `bson:"_id" json:"id"`
 	Start   time.Time
 	End     time.Time
+	UID     string
+	Comment string
 }
 
 type jsonRequest struct {
-	UserID string           `json:"user"`
 	Type   string           `json:"command"`
+	UserID string           `json:"user"`
+	Text   string           `json:"text"`
+	From   time.Time        `json:"from"`
+	To     time.Time        `json:"to"`
 	Data   *json.RawMessage `json:"data"`
 }
 
@@ -57,7 +62,7 @@ type appContext struct {
 }
 
 func main() {
-	app := appContext{IP: "172.16.0.6", Port: "8080", Path: "/go/src/app"}
+	app := appContext{IP: "172.16.0.6", Port: "8080", Path: "."}
 	clientOptions := options.Client().ApplyURI("mongodb://172.16.0.5")
 	client, err := mongo.NewClient(clientOptions)
 	if err == nil {
@@ -74,9 +79,9 @@ func main() {
 			if err == nil {
 				fmt.Printf("%d users found\n", usersCount)
 				if usersCount == 0 {
-					userA := user{ID: "alpha", Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
+					userA := user{Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
 					app.users.InsertOne(ctx, userA)
-					userB := user{ID: "beta", Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
+					userB := user{Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
 					_, err = app.users.InsertOne(ctx, userB)
 					if err == nil {
 						fmt.Printf("Two users %s and %s created\n", userA.ID, userB.ID)
@@ -142,7 +147,7 @@ func (app *appContext) serveRoot(res http.ResponseWriter, req *http.Request) {
 	http.ServeFile(res, req, filepath.Join(app.Path, req.URL.Path))
 }
 
-func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Request) {
+func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Request) {
 	//Recover
 	// defer func() {
 	// 	if err := recover(); err != nil {
@@ -154,6 +159,7 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 	response.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	var command jsonRequest
+	var params map[string]interface{}
 	ctx := context.Background()
 	reply := jsonReply{Status: "error", Data: "unimplemented"}
 
@@ -168,7 +174,7 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 	switch command.Type {
 	case "users":
 		result := make([]user, 0)
-		userCursor, err := db.users.Find(context.Background(), bson.D{})
+		userCursor, err := app.users.Find(context.Background(), bson.D{})
 		if err == nil {
 			defer userCursor.Close(ctx)
 			for userCursor.Next(ctx) {
@@ -189,11 +195,14 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 		}
 	case "slots":
 		result := make([]slot, 0)
-		var params map[string]interface{}
 		err := json.Unmarshal(*command.Data, &params)
 		if err == nil {
 			filter := bson.D{}
-			slotCursor, err := db.slots.Find(context.Background(), filter)
+			if len(command.UserID) > 1 {
+				filter = append(filter, bson.E{Key: "_id", Value: command.UserID})
+			}
+			//proceed with additional parameters here
+			slotCursor, err := app.slots.Find(context.Background(), filter)
 			if err == nil {
 				defer slotCursor.Close(ctx)
 				for slotCursor.Next(ctx) {
@@ -214,7 +223,29 @@ func (db *appContext) apiHandler(response http.ResponseWriter, request *http.Req
 			}
 		}
 	case "add":
+		timeZero := time.Time{}
+		if command.From != timeZero && command.To != timeZero && len(command.UserID) > 1 {
+			newSlot := slot{UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
+			result, err := app.slots.InsertOne(ctx, newSlot)
+			if err == nil {
+				reply.Status = "ok"
+				reply.Data = fmt.Sprint(result.InsertedID)
+				fmt.Printf("slot with id = %v inserted\n", result.InsertedID)
+			} else {
+				reply.Data = err.Error()
+			}
+		}
 	case "delete":
+		if len(command.Text) > 1 {
+			result, err := app.slots.DeleteOne(ctx, bson.M{"title": "The Polyglot Developer Podcast"})
+			if err == nil {
+				reply.Status = "ok"
+				fmt.Printf("removed %v document(s)\n", result.DeletedCount)
+			} else {
+				reply.Data = err.Error()
+			}
+
+		}
 	}
 	json.NewEncoder(response).Encode(reply)
 }
