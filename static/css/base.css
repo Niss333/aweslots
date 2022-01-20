@@ -110,6 +110,16 @@ body[data-blur = "enabled"] > .appFrame, body[data-blur = "enabled"] > .appHeade
   justify-content: center;
 }
 
+.allWidth {
+  width: 100%;
+}
+
+.quarterWidth {
+  width: 25%;
+  padding: 5px;
+}
+
+
 @media screen and (orientation: portrait) {
   body {
     transform: rotate(90deg);

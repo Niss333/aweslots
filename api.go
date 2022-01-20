@@ -44,8 +44,8 @@ type jsonRequest struct {
 }
 
 type jsonReply struct {
+	Type   string      `json:"type"`
 	Status string      `json:"status"`
-	Error  string      `json:"error,omitempty"`
 	Data   interface{} `json:"data,omitempty"`
 }
 
@@ -166,10 +166,11 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 	err := json.NewDecoder(request.Body).Decode(&command)
 	if err != nil {
 		fmt.Println(err)
-		reply = jsonReply{Status: "error", Data: fmt.Sprintf("XHR decoding failed: %v", err)}
+		reply.Data = fmt.Sprintf("XHR decoding failed: %v", err)
 		json.NewEncoder(response).Encode(reply)
 		return
 	}
+	reply.Type = command.Type
 	fmt.Println("Got", command.Type, "command")
 	switch command.Type {
 	case "users":
@@ -198,10 +199,10 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		err := json.Unmarshal(*command.Data, &params)
 		if err == nil {
 			filter := bson.D{}
-			if len(command.UserID) > 1 {
+			if command.UserID != "all" {
 				filter = append(filter, bson.E{Key: "_id", Value: command.UserID})
 			}
-			//proceed with additional parameters here
+			//proceed with additional filter parameters here
 			slotCursor, err := app.slots.Find(context.Background(), filter)
 			if err == nil {
 				defer slotCursor.Close(ctx)
