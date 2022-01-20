@@ -54,7 +54,7 @@ ApplicationObject.prototype.send = function (request) {
             switch (reply.status) {
                 case "ok":
                     console.log(reply.data);
-					switch (reply.status) {
+					switch (reply.type) {
 						case "users":
 							// display.setState({users: reply.data});
 							app.users = reply.data;
@@ -96,7 +96,7 @@ ApplicationObject.prototype.render = function () {
 	// this.display.querySelectorAll('*').forEach(n => n.remove());
 	// searchBar
 	var userOptions = {all: "All"};
-	for (var user of this.state.users) {
+	for (var user of this.users) {
 		userOptions[user.id] = `${user.firstName} ${user.lastName}`;
 	}
 	var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
