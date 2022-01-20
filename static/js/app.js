@@ -103,11 +103,13 @@ class BasicDisplay extends React.Component {
 		for (var user of this.state.users) {
 			userOptions[user.id] = `${user.firstName} ${user.lastName}`;
 		}
-		var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions).outerHTML;
-		var fromSelect = app.newTextInput("slotFromFilter", "quarterWidth flexCenter").outerHTML;
-		var toSelect = app.newTextInput("slotToFilter", "quarterWidth flexCenter").outerHTML;
-		var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter").outerHTML;
-		var searchBar = React.createElement('div className="allWidth flexCenter"', null, userSelect, fromSelect, toSelect, searchButton);
+		var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
+		var fromSelect = app.newTextInput("slotFromFilter", "quarterWidth flexCenter");
+		var toSelect = app.newTextInput("slotToFilter", "quarterWidth flexCenter");
+		var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter");
+		var searchBar = app.newElement("div", null, "allWidth flexCenter");
+		searchBar.append(userSelect, fromSelect, toSelect, searchButton);
+		// React.createElement('div className="allWidth flexCenter"', null, );
 		// searchBar.className = "allWidth flexCenter";
 		// slotList
 		// addBar
