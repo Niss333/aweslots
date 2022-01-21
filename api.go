@@ -238,9 +238,10 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		}
 	case "delete":
 		if len(command.Text) > 1 {
-			result, err := app.slots.DeleteOne(ctx, bson.M{"title": "The Polyglot Developer Podcast"})
+			result, err := app.slots.DeleteOne(ctx, bson.M{"_id": command.Text})
 			if err == nil {
 				reply.Status = "ok"
+				reply.Data = command.Text
 				fmt.Printf("removed %v document(s)\n", result.DeletedCount)
 			} else {
 				reply.Data = err.Error()

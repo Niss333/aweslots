@@ -37,6 +37,11 @@ select optgroup {
   background-color: #61839f;
 }
 
+.appDisplay {
+  overflow-x: hidden;
+  overflow-y: scroll
+}
+
 .appFooter {
   font-size: 2vh;
 }

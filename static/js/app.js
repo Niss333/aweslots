@@ -70,6 +70,8 @@ ApplicationObject.prototype.send = function (request) {
 							app.render();
 							break;
 						case "delete":
+							app.slots = app.slots.filter(s => s.id != reply.data);
+							app.render();
 							break;
 					}
                     break;
@@ -119,7 +121,7 @@ ApplicationObject.prototype.render = function () {
 		var userName = app.newElement("div", null, "quarterWidth flexCenter", userOptions[slot.user]);
 		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from);
 		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to);
-		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.comment);
+		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.text);
 		var deleteButton = app.newElement("div", slot.id, "quarterWidth flexCenter", "-");
 		deleteButton.addEventListener('click', this.deleteSlot);
 		var slotBar = app.newElement("div", null, "allWidth flexCenter");
@@ -152,7 +154,10 @@ ApplicationObject.prototype.addSlot = function() {
 	}
 }
 
-ApplicationObject.prototype.deleteSlot = function() {}
+ApplicationObject.prototype.deleteSlot = function() {
+	var command = {command: "slots", text: this.id, data: null};
+	app.send(command);
+}
 
 ApplicationObject.prototype.requestSlots = function() {
 	var command = {command: "slots", data: null};
