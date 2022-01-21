@@ -156,7 +156,7 @@ ApplicationObject.prototype.addSlot = function() {
 }
 
 ApplicationObject.prototype.deleteSlot = function() {
-	var command = {command: "slots", text: this.id, data: null};
+	var command = {command: "delete", text: this.id, data: null};
 	app.send(command);
 }
 

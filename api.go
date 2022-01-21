@@ -27,11 +27,11 @@ type user struct {
 }
 
 type slot struct {
-	ID    string `bson:"_id" json:"id"`
-	UID   string `json:"user"`
-	Start time.Time
-	End   time.Time
-	Text  string
+	ID    string    `bson:"_id" json:"id"`
+	UID   string    `bson:"uid" json:"user"`
+	Start time.Time `json:"from"`
+	End   time.Time `json:"to"`
+	Text  string    `json:"text"`
 }
 
 type jsonRequest struct {
@@ -200,7 +200,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		// if err == nil {}
 		filter := bson.D{}
 		if command.UserID != "all" {
-			filter = append(filter, bson.E{Key: "_id", Value: command.UserID})
+			filter = append(filter, bson.E{Key: "uid", Value: command.UserID})
 		}
 		//proceed with additional filter parameters here
 		slotCursor, err := app.slots.Find(context.Background(), filter)
