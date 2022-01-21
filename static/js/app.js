@@ -65,6 +65,9 @@ ApplicationObject.prototype.send = function (request) {
 							app.render();
 							break;
 						case "add":
+							app.newSlot.id = reply.data;
+							app.slots.push(app.newSlot);
+							app.render();
 							break;
 						case "delete":
 							break;
@@ -99,16 +102,66 @@ ApplicationObject.prototype.render = function () {
 	for (var user of this.users) {
 		userOptions[user.id] = `${user.firstName} ${user.lastName}`;
 	}
-	var userSelect = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
-	var fromSelect = app.newTextInput("slotFromFilter", "quarterWidth flexCenter");
-	var toSelect = app.newTextInput("slotToFilter", "quarterWidth flexCenter");
-	var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter");
+	var userFilter = app.newSelect("slotUserFilter", "quarterWidth flexCenter", userOptions);
+	var fromFilter = app.newTextInput("slotFromFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var toFilter = app.newTextInput("slotToFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var emptyButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", null);
+	var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", "Search");
+	searchButton.addEventListener('click', this.requestSlots);
 	var searchBar = app.newElement("div", null, "allWidth flexCenter");
-	searchBar.append(userSelect, fromSelect, toSelect, searchButton);
+	searchBar.append(userFilter, fromFilter, toFilter, emptyButton, searchButton);
 	// slotList
+	var tabs = app.newElement("div", null, "allWidth flexCenter");
+	for (var t of ["User", "From", "To", "Comment", "Action"]) tabs.appendChild(app.newElement("div", null, "quarterWidth flexCenter", t));
+	this.display.append(searchBar, tabs);
+	for (var slot of this.slots) {
+		var userName = app.newElement("div", null, "quarterWidth flexCenter", this.users[slot.uid].lastName);
+		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from);
+		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to);
+		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.comment);
+		var deleteButton = app.newElement("div", slot.id, "quarterWidth flexCenter", "-");
+		deleteButton.addEventListener('click', this.deleteSlot);
+		var slotBar = app.newElement("div", null, "allWidth flexCenter");
+		slotBar.append(userName, fromField, toField, commentField, deleteButton);
+		this.display.append(slotBar);
+	}
 	// addBar
+	delete userOptions.all;
+	var addUser = app.newSelect("addUserFilter", "quarterWidth flexCenter", userOptions);
+	var addFrom = app.newTextInput("addFromFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var addTo = app.newTextInput("addToFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var addComment = app.newTextInput("addComment", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var addButton = app.newElement("div", "addButton", "quarterWidth flexCenter", "Add");
+	addButton.addEventListener('click', this.addSlot);
+	var addBar = app.newElement("div", null, "allWidth flexCenter");
+	addBar.append(addUser, addFrom, addTo, addComment, addButton);
 	// statusBar
-	this.display.append(searchBar);
+	var statusBar = app.newElement("div", "statusBar", "allWidth flexCenter");
+	this.display.append(addBar, statusBar);
+}
+
+ApplicationObject.prototype.addSlot = function() {
+	var user = document.getElementById('addUserFilter').value;
+	var from = Date.parse(document.getElementById('addFromFilter').value);
+	var to = Date.parse(document.getElementById('addToFilter').value);
+	if (from & to) {
+		var command = {command: "add", user: user, from: new Date(from), to: new Date(to), comment: document.getElementById('addComment').value};
+		app.newSlot = command;
+		app.send(command);
+	}
+}
+
+ApplicationObject.prototype.deleteSlot = function() {}
+
+ApplicationObject.prototype.requestSlots = function() {
+	var command = {command: "slots", data: null};
+	var user = document.getElementById('slotUserFilter').value;
+	var from = Date.parse(document.getElementById('slotFromFilter').value);
+	var to = Date.parse(document.getElementById('slotToFilter').value);
+	if (user != "all") command.user = user;
+	if (from) command.from = new Date(from);
+	if (to) command.to = new Date(to);
+	app.send(command);
 }
 
 class BasicDisplay extends React.Component {
@@ -120,9 +173,6 @@ class BasicDisplay extends React.Component {
 		app.send({command: "users", data: null});
 	}
 	componentWillUnmount() {}
-	requestSlots() {
-		app.send({command: "slots", data: null, user: document.getElementById('slotUserFilter').value});
-	}
     render() {
 		return React.createElement('div', null, `Привет, ${this.props.toWhat}`);
 	}
