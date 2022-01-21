@@ -120,8 +120,8 @@ ApplicationObject.prototype.render = function () {
 	for (var slot of this.slots) {
 		// let user = this.users.find(u => u.id == slot.user);
 		var userName = app.newElement("div", null, "quarterWidth flexCenter", userOptions[slot.user]);
-		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from);
-		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to);
+		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from.toISOString().replace("T"," ").substring(0, 19));
+		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to.toLocaleString("de-DE"));
 		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.text);
 		var deleteButton = app.newElement("div", slot.id, "quarterWidth flexCenter", "-");
 		deleteButton.addEventListener('click', this.deleteSlot);

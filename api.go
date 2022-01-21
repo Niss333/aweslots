@@ -198,9 +198,9 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		result := make([]slot, 0)
 		// err := json.Unmarshal(*command.Data, &params)
 		// if err == nil {}
-		filter := bson.D{}
+		filter := bson.M{"start": bson.M{"$gt": command.From, "$lt": command.From}}
 		if command.UserID != "all" {
-			filter = append(filter, bson.E{Key: "uid", Value: command.UserID})
+			filter["uid"] = command.UserID
 		}
 		//proceed with additional filter parameters here
 		slotCursor, err := app.slots.Find(context.Background(), filter)
