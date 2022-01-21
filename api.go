@@ -159,7 +159,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 	response.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	var command jsonRequest
-	var params map[string]interface{}
+	// var params map[string]interface{}
 	ctx := context.Background()
 	reply := jsonReply{Status: "error", Data: "unimplemented"}
 
@@ -196,31 +196,30 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		}
 	case "slots":
 		result := make([]slot, 0)
-		err := json.Unmarshal(*command.Data, &params)
+		// err := json.Unmarshal(*command.Data, &params)
+		// if err == nil {}
+		filter := bson.D{}
+		if command.UserID != "all" {
+			filter = append(filter, bson.E{Key: "_id", Value: command.UserID})
+		}
+		//proceed with additional filter parameters here
+		slotCursor, err := app.slots.Find(context.Background(), filter)
 		if err == nil {
-			filter := bson.D{}
-			if command.UserID != "all" {
-				filter = append(filter, bson.E{Key: "_id", Value: command.UserID})
-			}
-			//proceed with additional filter parameters here
-			slotCursor, err := app.slots.Find(context.Background(), filter)
-			if err == nil {
-				defer slotCursor.Close(ctx)
-				for slotCursor.Next(ctx) {
-					var s slot
-					err := slotCursor.Decode(&s)
-					if err == nil {
-						result = append(result, s)
-					} else {
-						fmt.Println("slot decoding failed:", err.Error())
-					}
-				}
-				if err := slotCursor.Err(); err == nil {
-					reply.Status = "ok"
-					reply.Data = result
+			defer slotCursor.Close(ctx)
+			for slotCursor.Next(ctx) {
+				var s slot
+				err := slotCursor.Decode(&s)
+				if err == nil {
+					result = append(result, s)
 				} else {
-					reply.Data = fmt.Sprintf("slotCursor failed: %s", err.Error())
+					fmt.Println("slot decoding failed:", err.Error())
 				}
+			}
+			if err := slotCursor.Err(); err == nil {
+				reply.Status = "ok"
+				reply.Data = result
+			} else {
+				reply.Data = fmt.Sprintf("slotCursor failed: %s", err.Error())
 			}
 		}
 	case "add":

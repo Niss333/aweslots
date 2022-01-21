@@ -37,7 +37,7 @@ select optgroup {
   background-color: #61839f;
 }
 
-.appDisplay {
+#appDisplay {
   overflow-x: hidden;
   overflow-y: scroll
 }

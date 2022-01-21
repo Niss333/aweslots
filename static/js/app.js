@@ -59,6 +59,7 @@ ApplicationObject.prototype.send = function (request) {
 							// display.setState({users: reply.data});
 							app.users = reply.data;
 							app.render();
+							app.send({command: "slots", user: "all", data: null});
 							break;
 						case "slots":
 							app.slots = reply.data;
