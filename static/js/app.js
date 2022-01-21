@@ -113,7 +113,7 @@ ApplicationObject.prototype.render = function () {
 	var fromFilter = app.newTextInput("slotFromFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
 	var toFilter = app.newTextInput("slotToFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
 	var emptyButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", null);
-	var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", "Search");
+	var searchButton = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter navControl", "Search");
 	searchButton.addEventListener('click', this.requestSlots);
 	var searchBar = app.newElement("div", null, "allWidth flexCenter");
 	searchBar.append(userFilter, fromFilter, toFilter, emptyButton, searchButton);
@@ -139,7 +139,7 @@ ApplicationObject.prototype.render = function () {
 	var addFrom = app.newTextInput("addFromFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
 	var addTo = app.newTextInput("addToFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
 	var addComment = app.newTextInput("addComment", "quarterWidth flexCenter", "add some...");
-	var addButton = app.newElement("div", "addButton", "quarterWidth flexCenter", "Add");
+	var addButton = app.newElement("div", "addButton", "quarterWidth flexCenter navControl", "Add");
 	addButton.addEventListener('click', this.addSlot);
 	var addBar = app.newElement("div", null, "allWidth flexCenter");
 	addBar.append(addUser, addFrom, addTo, addComment, addButton);

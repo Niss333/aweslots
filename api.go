@@ -29,8 +29,8 @@ type user struct {
 type slot struct {
 	ID    string    `bson:"_id" json:"id"`
 	UID   string    `bson:"uid" json:"user"`
-	Start time.Time `json:"from"`
-	End   time.Time `json:"to"`
+	Start time.Time `bson:"start" json:"from"`
+	End   time.Time `bson:"end" json:"to"`
 	Text  string    `json:"text"`
 }
 
@@ -202,12 +202,12 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		if command.From.IsZero() {
 			fmt.Println("'from' filter is zero")
 		} else {
-			fmt.Println(command.From, command.To)
 			filter["start"] = bson.M{"$gt": command.From, "$lt": command.To}
 		}
 		if command.UserID != "all" {
 			filter["uid"] = command.UserID
 		}
+		fmt.Println(filter)
 		//proceed with additional filter parameters here
 		slotCursor, err := app.slots.Find(context.Background(), filter)
 		if err == nil {
