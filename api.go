@@ -19,24 +19,24 @@ import (
 )
 
 type user struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName string             `json:"firstName"`
-	LastName  string             `json:"lastName"`
-	Email     string             `json:"-"`
-	Password  string             `json:"-"`
+	ID        string `json:"id" bson:"_id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"-"`
+	Password  string `json:"-"`
 }
 
 type slot struct {
-	ID      primitive.ObjectID `bson:"_id" json:"id"`
+	ID      string `bson:"_id" json:"id"`
+	UID     string `json:"user"`
 	Start   time.Time
 	End     time.Time
-	UID     string
 	Comment string
 }
 
 type jsonRequest struct {
-	Type   string           `json:"command"`
 	UserID string           `json:"user"`
+	Type   string           `json:"command"`
 	Text   string           `json:"text"`
 	From   time.Time        `json:"from"`
 	To     time.Time        `json:"to"`
@@ -79,9 +79,9 @@ func main() {
 			if err == nil {
 				fmt.Printf("%d users found\n", usersCount)
 				if usersCount == 0 {
-					userA := user{ID: primitive.NewObjectID(), Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
+					userA := user{ID: primitive.NewObjectID().Hex(), Email: "a@app.com", Password: "omega", FirstName: "User", LastName: "A"}
 					app.users.InsertOne(ctx, userA)
-					userB := user{ID: primitive.NewObjectID(), Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
+					userB := user{ID: primitive.NewObjectID().Hex(), Email: "b@app.com", Password: "omicron", FirstName: "User", LastName: "B"}
 					_, err = app.users.InsertOne(ctx, userB)
 					if err == nil {
 						fmt.Printf("Two users %s and %s created\n", userA.ID, userB.ID)
@@ -226,7 +226,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 	case "add":
 		timeZero := time.Time{}
 		if command.From != timeZero && command.To != timeZero && len(command.UserID) > 1 {
-			newSlot := slot{ID: primitive.NewObjectID(), UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
+			newSlot := slot{ID: primitive.NewObjectID().Hex(), UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
 			result, err := app.slots.InsertOne(ctx, newSlot)
 			if err == nil {
 				reply.Status = "ok"

@@ -115,7 +115,7 @@ ApplicationObject.prototype.render = function () {
 	for (var t of ["User", "From", "To", "Comment", "Action"]) tabs.appendChild(app.newElement("div", null, "quarterWidth flexCenter", t));
 	this.display.append(searchBar, tabs);
 	for (var slot of this.slots) {
-		var userName = app.newElement("div", null, "quarterWidth flexCenter", this.users[slot.uid].lastName);
+		var userName = app.newElement("div", null, "quarterWidth flexCenter", this.users[slot.user].lastName);
 		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from);
 		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to);
 		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.comment);
@@ -145,7 +145,7 @@ ApplicationObject.prototype.addSlot = function() {
 	var from = Date.parse(document.getElementById('addFromFilter').value);
 	var to = Date.parse(document.getElementById('addToFilter').value);
 	if (from & to) {
-		var command = {command: "add", user: user, from: new Date(from), to: new Date(to), comment: document.getElementById('addComment').value};
+		var command = {command: "add", user: user, from: new Date(from), to: new Date(to), text: document.getElementById('addComment').value};
 		app.newSlot = command;
 		app.send(command);
 	}
