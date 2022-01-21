@@ -195,10 +195,16 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 			}
 		}
 	case "slots":
+		filter := bson.M{}
 		result := make([]slot, 0)
 		// err := json.Unmarshal(*command.Data, &params)
 		// if err == nil {}
-		filter := bson.M{"start": bson.M{"$gt": command.From, "$lt": command.From}}
+		if command.From.IsZero() {
+			fmt.Println("from zero")
+		} else {
+			fmt.Println(command.From, command.To)
+			filter["start"] = bson.M{"$gt": command.From, "$lt": command.To}
+		}
 		if command.UserID != "all" {
 			filter["uid"] = command.UserID
 		}
