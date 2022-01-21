@@ -165,11 +165,9 @@ ApplicationObject.prototype.deleteSlot = function() {
 }
 
 ApplicationObject.prototype.requestSlots = function() {
-	var command = {command: "slots", data: null};
-	var user = document.getElementById('slotUserFilter').value;
+	var command = {command: "slots", data: null, user: document.getElementById('slotUserFilter').value};
 	var from = Date.parse(document.getElementById('slotFromFilter').value);
 	var to = Date.parse(document.getElementById('slotToFilter').value);
-	if (user != "all") command.user = user;
 	if (from) command.from = new Date(from);
 	if (to) command.to = new Date(to);
 	app.send(command);
