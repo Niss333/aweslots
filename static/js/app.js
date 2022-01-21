@@ -62,7 +62,11 @@ ApplicationObject.prototype.send = function (request) {
 							app.send({command: "slots", user: "all", data: null});
 							break;
 						case "slots":
-							app.slots = reply.data;
+							app.slots = [];
+							for (var data of reply.data) {
+								var slot = {id: data.id, user: data.user, text: data.text, from: new Date(data.from), to: new Date(data.to)};
+								app.slots.push(slot)
+							}
 							app.render();
 							break;
 						case "add":

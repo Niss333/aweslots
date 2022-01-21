@@ -200,7 +200,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 		// err := json.Unmarshal(*command.Data, &params)
 		// if err == nil {}
 		if command.From.IsZero() {
-			fmt.Println("from zero")
+			fmt.Println("'from' filter is zero")
 		} else {
 			fmt.Println(command.From, command.To)
 			filter["start"] = bson.M{"$gt": command.From, "$lt": command.To}
