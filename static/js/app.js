@@ -131,7 +131,7 @@ ApplicationObject.prototype.render = function () {
 	var addUser = app.newSelect("addUserFilter", "quarterWidth flexCenter", userOptions);
 	var addFrom = app.newTextInput("addFromFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
 	var addTo = app.newTextInput("addToFilter", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
-	var addComment = app.newTextInput("addComment", "quarterWidth flexCenter", "MM/DD/YY hh:mm:ss");
+	var addComment = app.newTextInput("addComment", "quarterWidth flexCenter", "add some...");
 	var addButton = app.newElement("div", "addButton", "quarterWidth flexCenter", "Add");
 	addButton.addEventListener('click', this.addSlot);
 	var addBar = app.newElement("div", null, "allWidth flexCenter");

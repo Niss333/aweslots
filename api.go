@@ -27,11 +27,11 @@ type user struct {
 }
 
 type slot struct {
-	ID      string `bson:"_id" json:"id"`
-	UID     string `json:"user"`
-	Start   time.Time
-	End     time.Time
-	Comment string
+	ID    string `bson:"_id" json:"id"`
+	UID   string `json:"user"`
+	Start time.Time
+	End   time.Time
+	Text  string
 }
 
 type jsonRequest struct {
@@ -226,7 +226,7 @@ func (app *appContext) apiHandler(response http.ResponseWriter, request *http.Re
 	case "add":
 		timeZero := time.Time{}
 		if command.From != timeZero && command.To != timeZero && len(command.UserID) > 1 {
-			newSlot := slot{ID: primitive.NewObjectID().Hex(), UID: command.UserID, Start: command.From, End: command.To, Comment: command.Text}
+			newSlot := slot{ID: primitive.NewObjectID().Hex(), UID: command.UserID, Start: command.From, End: command.To, Text: command.Text}
 			result, err := app.slots.InsertOne(ctx, newSlot)
 			if err == nil {
 				reply.Status = "ok"
