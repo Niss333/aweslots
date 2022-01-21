@@ -115,7 +115,8 @@ ApplicationObject.prototype.render = function () {
 	for (var t of ["User", "From", "To", "Comment", "Action"]) tabs.appendChild(app.newElement("div", null, "quarterWidth flexCenter", t));
 	this.display.append(searchBar, tabs);
 	for (var slot of this.slots) {
-		var userName = app.newElement("div", null, "quarterWidth flexCenter", this.users[slot.user].lastName);
+		// let user = this.users.find(u => u.id == slot.user);
+		var userName = app.newElement("div", null, "quarterWidth flexCenter", userOptions[slot.user]);
 		var fromField = app.newElement("div", null, "quarterWidth flexCenter", slot.from);
 		var toField = app.newElement("div", null, "quarterWidth flexCenter", slot.to);
 		var commentField = app.newElement("div", "slotSearchButton", "quarterWidth flexCenter", slot.comment);
